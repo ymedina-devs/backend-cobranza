@@ -1,0 +1,1311 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.16
+-- Dumped by pg_dump version 10.16
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: colas; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA colas;
+
+
+ALTER SCHEMA colas OWNER TO postgres;
+
+--
+-- Name: historicos; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA historicos;
+
+
+ALTER SCHEMA historicos OWNER TO postgres;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: bancos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bancos (
+    id integer NOT NULL,
+    tx_banco character varying(200),
+    cd_verificador character varying(4),
+    st_registro integer,
+    created_at time(0) with time zone,
+    updated_at time(0) with time zone
+);
+
+
+ALTER TABLE public.bancos OWNER TO postgres;
+
+--
+-- Name: bancos_cd_banco_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.bancos_cd_banco_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.bancos_cd_banco_seq OWNER TO postgres;
+
+--
+-- Name: bancos_cd_banco_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.bancos_cd_banco_seq OWNED BY public.bancos.id;
+
+
+--
+-- Name: bitacora; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bitacora (
+    cd_consecutivo_archivo bigint NOT NULL,
+    cd_empresa integer,
+    tx_consecutivo character varying(8),
+    tx_archivo character varying(100),
+    tp_archivo integer,
+    st_registro integer,
+    fe_registro timestamp with time zone,
+    tp_emisor integer
+);
+
+
+ALTER TABLE public.bitacora OWNER TO postgres;
+
+--
+-- Name: bitacora_cd_consecutivo_archivo_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.bitacora_cd_consecutivo_archivo_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.bitacora_cd_consecutivo_archivo_seq OWNER TO postgres;
+
+--
+-- Name: bitacora_cd_consecutivo_archivo_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.bitacora_cd_consecutivo_archivo_seq OWNED BY public.bitacora.cd_consecutivo_archivo;
+
+
+--
+-- Name: clientes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.clientes (
+    id bigint NOT NULL,
+    tp_documento character varying(1),
+    tx_documento character varying(15),
+    tx_razonsocial character varying(80),
+    tx_correo character varying(80),
+    tx_telefono character varying(20),
+    tx_cuenta character varying(20),
+    cd_banco integer,
+    cd_empesa integer,
+    st_registro integer,
+    fe_registro timestamp with time zone
+);
+
+
+ALTER TABLE public.clientes OWNER TO postgres;
+
+--
+-- Name: clientes_cd_cliente_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.clientes_cd_cliente_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.clientes_cd_cliente_seq OWNER TO postgres;
+
+--
+-- Name: clientes_cd_cliente_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.clientes_cd_cliente_seq OWNED BY public.clientes.id;
+
+
+--
+-- Name: cobros; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cobros (
+    id bigint NOT NULL,
+    cd_cliente integer,
+    cd_empresa integer,
+    mt_cobro double precision,
+    tx_error character varying(250),
+    st_cobro integer,
+    tx_referencia1 character varying(20),
+    tx_referencia2 character varying(20),
+    tx_referencia3 character varying(20),
+    tx_referencia_nu1 integer,
+    tx_referencia_nu2 integer,
+    cd_consecutivo_archivo integer
+);
+
+
+ALTER TABLE public.cobros OWNER TO postgres;
+
+--
+-- Name: cobros_cd_cobro_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cobros_cd_cobro_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cobros_cd_cobro_seq OWNER TO postgres;
+
+--
+-- Name: cobros_cd_cobro_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cobros_cd_cobro_seq OWNED BY public.cobros.id;
+
+
+--
+-- Name: cuentasbancarias; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cuentasbancarias (
+    id integer NOT NULL,
+    cd_empresa integer,
+    tx_cuenta character varying(30),
+    cd_banco integer,
+    nu_lote integer,
+    tx_ruta character varying(300),
+    st_registro integer,
+    created_at time(0) with time zone,
+    updated_at time(0) with time zone
+);
+
+
+ALTER TABLE public.cuentasbancarias OWNER TO postgres;
+
+--
+-- Name: cuentasbancarias_cd_cuenta_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cuentasbancarias_cd_cuenta_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cuentasbancarias_cd_cuenta_seq OWNER TO postgres;
+
+--
+-- Name: cuentasbancarias_cd_cuenta_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cuentasbancarias_cd_cuenta_seq OWNED BY public.cuentasbancarias.id;
+
+
+--
+-- Name: empresas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.empresas (
+    id integer NOT NULL,
+    tx_empresa character varying(250),
+    tx_razonsocial character varying(250),
+    tp_documento integer,
+    tx_documento character varying(15),
+    st_registro integer,
+    created_at timestamp(0) with time zone,
+    updated_at time(0) with time zone
+);
+
+
+ALTER TABLE public.empresas OWNER TO postgres;
+
+--
+-- Name: empresas_cd_empresa_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.empresas_cd_empresa_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.empresas_cd_empresa_seq OWNER TO postgres;
+
+--
+-- Name: empresas_cd_empresa_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.empresas_cd_empresa_seq OWNED BY public.empresas.id;
+
+
+--
+-- Name: failed_jobs; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.failed_jobs (
+    id bigint NOT NULL,
+    connection text NOT NULL,
+    queue text NOT NULL,
+    payload text NOT NULL,
+    exception text NOT NULL,
+    failed_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.failed_jobs OWNER TO postgres;
+
+--
+-- Name: failed_jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.failed_jobs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.failed_jobs_id_seq OWNER TO postgres;
+
+--
+-- Name: failed_jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.failed_jobs_id_seq OWNED BY public.failed_jobs.id;
+
+
+--
+-- Name: migrations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.migrations (
+    id integer NOT NULL,
+    migration character varying(255) NOT NULL,
+    batch integer NOT NULL
+);
+
+
+ALTER TABLE public.migrations OWNER TO postgres;
+
+--
+-- Name: migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.migrations_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.migrations_id_seq OWNER TO postgres;
+
+--
+-- Name: migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.migrations_id_seq OWNED BY public.migrations.id;
+
+
+--
+-- Name: model_has_permissions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.model_has_permissions (
+    permission_id bigint NOT NULL,
+    model_type character varying(255) NOT NULL,
+    model_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.model_has_permissions OWNER TO postgres;
+
+--
+-- Name: model_has_roles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.model_has_roles (
+    role_id bigint NOT NULL,
+    model_type character varying(255) NOT NULL,
+    model_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.model_has_roles OWNER TO postgres;
+
+--
+-- Name: password_resets; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.password_resets (
+    email character varying(255) NOT NULL,
+    token character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone
+);
+
+
+ALTER TABLE public.password_resets OWNER TO postgres;
+
+--
+-- Name: permissions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.permissions (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    description character varying(255) NOT NULL,
+    guard_name character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+ALTER TABLE public.permissions OWNER TO postgres;
+
+--
+-- Name: permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.permissions_id_seq OWNER TO postgres;
+
+--
+-- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.permissions_id_seq OWNED BY public.permissions.id;
+
+
+--
+-- Name: role_has_permissions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.role_has_permissions (
+    permission_id bigint NOT NULL,
+    role_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.role_has_permissions OWNER TO postgres;
+
+--
+-- Name: roles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.roles (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    guard_name character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+ALTER TABLE public.roles OWNER TO postgres;
+
+--
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.roles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.roles_id_seq OWNER TO postgres;
+
+--
+-- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.roles_id_seq OWNED BY public.roles.id;
+
+
+--
+-- Name: tablacodigo; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tablacodigo (
+    id integer NOT NULL,
+    tx_tabla character varying(20),
+    cd_modulo integer,
+    tx_valor character varying(80),
+    created_at time(0) with time zone,
+    updated_at time(0) with time zone
+);
+
+
+ALTER TABLE public.tablacodigo OWNER TO postgres;
+
+--
+-- Name: tablacodigo_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.tablacodigo ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tablacodigo_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+    email_verified_at timestamp(0) without time zone,
+    password character varying(255) NOT NULL,
+    remember_token character varying(100),
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone,
+    empresa_id integer
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: bancos id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bancos ALTER COLUMN id SET DEFAULT nextval('public.bancos_cd_banco_seq'::regclass);
+
+
+--
+-- Name: bitacora cd_consecutivo_archivo; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bitacora ALTER COLUMN cd_consecutivo_archivo SET DEFAULT nextval('public.bitacora_cd_consecutivo_archivo_seq'::regclass);
+
+
+--
+-- Name: clientes id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.clientes ALTER COLUMN id SET DEFAULT nextval('public.clientes_cd_cliente_seq'::regclass);
+
+
+--
+-- Name: cobros id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cobros ALTER COLUMN id SET DEFAULT nextval('public.cobros_cd_cobro_seq'::regclass);
+
+
+--
+-- Name: cuentasbancarias id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cuentasbancarias ALTER COLUMN id SET DEFAULT nextval('public.cuentasbancarias_cd_cuenta_seq'::regclass);
+
+
+--
+-- Name: empresas id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.empresas ALTER COLUMN id SET DEFAULT nextval('public.empresas_cd_empresa_seq'::regclass);
+
+
+--
+-- Name: failed_jobs id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.failed_jobs ALTER COLUMN id SET DEFAULT nextval('public.failed_jobs_id_seq'::regclass);
+
+
+--
+-- Name: migrations id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.migrations_id_seq'::regclass);
+
+
+--
+-- Name: permissions id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.permissions ALTER COLUMN id SET DEFAULT nextval('public.permissions_id_seq'::regclass);
+
+
+--
+-- Name: roles id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Data for Name: bancos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.bancos (id, tx_banco, cd_verificador, st_registro, created_at, updated_at) FROM stdin;
+2	Banesco	0134	1	19:19:22-04	01:17:09-04
+1	Venezuela	0102	1	19:19:05-04	19:42:34-04
+4	B.O.D	0116	1	03:01:27-04	03:52:14-04
+3	Provincial	0108	1	19:19:43-04	03:53:03-04
+5	Venezuela1	0101	1	00:44:34-04	00:44:34-04
+6	VenezuelaA	0105	1	03:52:36-04	03:52:36-04
+\.
+
+
+--
+-- Data for Name: bitacora; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.bitacora (cd_consecutivo_archivo, cd_empresa, tx_consecutivo, tx_archivo, tp_archivo, st_registro, fe_registro, tp_emisor) FROM stdin;
+1	\N	12ab34cd	\N	\N	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: clientes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.clientes (id, tp_documento, tx_documento, tx_razonsocial, tx_correo, tx_telefono, tx_cuenta, cd_banco, cd_empesa, st_registro, fe_registro) FROM stdin;
+1	V	21537872	Tactics Group	banthony424@gmail.com	04166108601	01021234123456789	2	8	1	\N
+2	J	20111222	Wiwi Tuy Salsa latina	salsalatina@hotmail.com	04123964222	012345678910	6	11	1	\N
+\.
+
+
+--
+-- Data for Name: cobros; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cobros (id, cd_cliente, cd_empresa, mt_cobro, tx_error, st_cobro, tx_referencia1, tx_referencia2, tx_referencia3, tx_referencia_nu1, tx_referencia_nu2, cd_consecutivo_archivo) FROM stdin;
+5	2	13	2000	\N	11	\N	\N	\N	\N	\N	1
+1	1	8	1500	\N	11	\N	\N	\N	\N	\N	1
+6	1	8	20000	\N	11	\N	\N	\N	\N	\N	1
+\.
+
+
+--
+-- Data for Name: cuentasbancarias; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cuentasbancarias (id, cd_empresa, tx_cuenta, cd_banco, nu_lote, tx_ruta, st_registro, created_at, updated_at) FROM stdin;
+28	13	01021020304050607080	5	3500	/hola/1	1	23:58:23-04	23:58:23-04
+29	13	1020302020	4	54545	/hola/1	1	00:56:24-04	00:58:04-04
+\.
+
+
+--
+-- Data for Name: empresas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.empresas (id, tx_empresa, tx_razonsocial, tp_documento, tx_documento, st_registro, created_at, updated_at) FROM stdin;
+8	PepsiCola	polar	3	10444555	1	2021-05-13 20:52:08-04	21:47:46-04
+11	SimpleTV	galaxy	5	10101010101	1	2021-05-15 03:59:57-04	03:59:57-04
+13	Inter Cable	Asociados internacional	4	1012528558988	1	2021-05-13 03:13:03-04	05:27:33-04
+\.
+
+
+--
+-- Data for Name: failed_jobs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.failed_jobs (id, connection, queue, payload, exception, failed_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: migrations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.migrations (id, migration, batch) FROM stdin;
+1	2014_10_12_000000_create_users_table	1
+2	2014_10_12_100000_create_password_resets_table	1
+3	2019_08_19_000000_create_failed_jobs_table	1
+4	2021_04_25_003143_create_permission_tables	1
+\.
+
+
+--
+-- Data for Name: model_has_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.model_has_permissions (permission_id, model_type, model_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: model_has_roles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.model_has_roles (role_id, model_type, model_id) FROM stdin;
+1	App\\User	1
+1	App\\User	17
+1	App\\User	19
+7	App\\User	17
+13	App\\User	20
+\.
+
+
+--
+-- Data for Name: password_resets; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.password_resets (email, token, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.permissions (id, name, description, guard_name, created_at, updated_at) FROM stdin;
+1	users.index	Ver listado de usuarios	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+2	users.create	Crear usuarios	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+3	users.edit	Editar usuarios	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+4	users.show	ver usuarios	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+5	roles.index	Ver listado de roles	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+6	roles.edit	Editar roles	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+7	roles.show	Ver roles	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+8	roles.create	Crear roles	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+9	roles.destroy	Eliminar roles	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+11	cobros.admin	Listar Total de Cobros Administrador	web	2021-05-22 20:27:00	2021-05-22 20:27:02
+10	cobros.index	Listar Cobros	web	2021-05-22 20:26:03	2021-05-22 20:26:08
+12	cobros.edit	Editar Estatus de cobro	web	2021-05-22 20:27:49	2021-05-22 20:27:51
+\.
+
+
+--
+-- Data for Name: role_has_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.role_has_permissions (permission_id, role_id) FROM stdin;
+1	1
+2	1
+3	1
+4	1
+5	1
+6	1
+7	1
+8	1
+9	1
+11	1
+10	1
+12	1
+10	13
+12	13
+\.
+
+
+--
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.roles (id, name, guard_name, created_at, updated_at) FROM stdin;
+1	Admin	web	2021-05-11 13:53:18	2021-05-11 13:53:18
+7	Ninguno	web	2021-05-14 22:36:35	2021-05-14 22:36:35
+13	Usuario Cobros Basico	web	2021-05-23 00:30:33	2021-05-23 00:30:42
+\.
+
+
+--
+-- Data for Name: tablacodigo; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tablacodigo (id, tx_tabla, cd_modulo, tx_valor, created_at, updated_at) FROM stdin;
+3	tp_documento	1	V	\N	\N
+4	tp_documento	2	J	\N	\N
+5	tp_documento	3	G	\N	\N
+6	tp_documento	4	E	\N	\N
+1	st_registro	1	Activo	\N	\N
+2	st_registro	2	Inactivo	\N	\N
+7	st_cobro	1	Generado	15:30:34-04	15:30:34-04
+8	st_cobro	2	Anulado	16:53:40-04	16:53:40-04
+9	st_cobro	3	Cobrado	16:54:01-04	16:54:01-04
+10	st_cobro	4	Pendiente	16:54:09-04	16:54:09-04
+11	st_cobro	5	Rechazado	03:13:38-04	03:13:38-04
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (id, name, email, email_verified_at, password, remember_token, created_at, updated_at, empresa_id) FROM stdin;
+1	anthony	BANTHONY424@GMAIL.COM	\N	$2y$10$L9oUjIK4Jrv5.8ZJROW/meuen2jpQQfrXSZGiisjhNEER1esux9/y	\N	2021-05-11 13:59:25	2021-05-24 23:27:37	\N
+20	yorman	YORMANDUQ@GMAIL.COM	\N	$2y$10$kbBNiVowSWrZJwncgPaVXOcn3H9DbAWXB2mgeHnJRFhGumcsZflPW	iQ8FVjPg24ZNNUdLpnVxYXn0lXhT4pncpCON1yPc2T6WAnH6BRDWe4l17pkB	2021-05-22 05:29:36	2021-05-26 02:31:30	8
+\.
+
+
+--
+-- Name: bancos_cd_banco_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.bancos_cd_banco_seq', 6, true);
+
+
+--
+-- Name: bitacora_cd_consecutivo_archivo_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.bitacora_cd_consecutivo_archivo_seq', 1, true);
+
+
+--
+-- Name: clientes_cd_cliente_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.clientes_cd_cliente_seq', 2, true);
+
+
+--
+-- Name: cobros_cd_cobro_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cobros_cd_cobro_seq', 5, true);
+
+
+--
+-- Name: cuentasbancarias_cd_cuenta_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cuentasbancarias_cd_cuenta_seq', 29, true);
+
+
+--
+-- Name: empresas_cd_empresa_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.empresas_cd_empresa_seq', 16, true);
+
+
+--
+-- Name: failed_jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.failed_jobs_id_seq', 1, false);
+
+
+--
+-- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.migrations_id_seq', 4, true);
+
+
+--
+-- Name: permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.permissions_id_seq', 9, true);
+
+
+--
+-- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.roles_id_seq', 13, true);
+
+
+--
+-- Name: tablacodigo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.tablacodigo_id_seq', 168, true);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 20, true);
+
+
+--
+-- Name: bancos bancos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bancos
+    ADD CONSTRAINT bancos_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: bitacora bitacora_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bitacora
+    ADD CONSTRAINT bitacora_pkey PRIMARY KEY (cd_consecutivo_archivo);
+
+
+--
+-- Name: clientes clientes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.clientes
+    ADD CONSTRAINT clientes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cobros cobros_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cobros
+    ADD CONSTRAINT cobros_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cuentasbancarias cuentasbancarias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cuentasbancarias
+    ADD CONSTRAINT cuentasbancarias_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: failed_jobs failed_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.failed_jobs
+    ADD CONSTRAINT failed_jobs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.migrations
+    ADD CONSTRAINT migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: model_has_permissions model_has_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.model_has_permissions
+    ADD CONSTRAINT model_has_permissions_pkey PRIMARY KEY (permission_id, model_id, model_type);
+
+
+--
+-- Name: model_has_roles model_has_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.model_has_roles
+    ADD CONSTRAINT model_has_roles_pkey PRIMARY KEY (role_id, model_id, model_type);
+
+
+--
+-- Name: permissions permissions_name_guard_name_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.permissions
+    ADD CONSTRAINT permissions_name_guard_name_unique UNIQUE (name, guard_name);
+
+
+--
+-- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.permissions
+    ADD CONSTRAINT permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: empresas pkey_empresas; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.empresas
+    ADD CONSTRAINT pkey_empresas PRIMARY KEY (id);
+
+
+--
+-- Name: role_has_permissions role_has_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.role_has_permissions
+    ADD CONSTRAINT role_has_permissions_pkey PRIMARY KEY (permission_id, role_id);
+
+
+--
+-- Name: roles roles_name_guard_name_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT roles_name_guard_name_unique UNIQUE (name, guard_name);
+
+
+--
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tablacodigo tablacodigo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tablacodigo
+    ADD CONSTRAINT tablacodigo_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_email_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_unique UNIQUE (email);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ba_cd_verificador; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ba_cd_verificador ON public.bancos USING btree (cd_verificador);
+
+
+--
+-- Name: cd_banco; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX cd_banco ON public.bancos USING btree (id);
+
+
+--
+-- Name: cd_consecutivo_archivo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX cd_consecutivo_archivo ON public.bitacora USING btree (cd_consecutivo_archivo);
+
+
+--
+-- Name: cd_empresa; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX cd_empresa ON public.empresas USING btree (id);
+
+
+--
+-- Name: cd_empresa_arch; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX cd_empresa_arch ON public.bitacora USING btree (cd_empresa);
+
+
+--
+-- Name: cl_cd_cliente; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX cl_cd_cliente ON public.clientes USING btree (id, cd_banco, cd_empesa);
+
+
+--
+-- Name: co_cd_empresa_in; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX co_cd_empresa_in ON public.cobros USING btree (cd_cliente, cd_empresa, tx_referencia1, tx_referencia2, tx_referencia3, tx_referencia_nu1, tx_referencia_nu2, cd_consecutivo_archivo);
+
+
+--
+-- Name: fki_cb_cd_banco; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_cb_cd_banco ON public.cuentasbancarias USING btree (cd_banco);
+
+
+--
+-- Name: fki_cb_cd_empresa; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_cb_cd_empresa ON public.cuentasbancarias USING btree (cd_empresa);
+
+
+--
+-- Name: fki_cl_cd_banco; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_cl_cd_banco ON public.clientes USING btree (cd_banco);
+
+
+--
+-- Name: fki_cl_cd_empresas; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_cl_cd_empresas ON public.clientes USING btree (cd_empesa);
+
+
+--
+-- Name: fki_co_cd_cliente; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_co_cd_cliente ON public.cobros USING btree (cd_cliente);
+
+
+--
+-- Name: fki_co_cd_consecutivo_archivo; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_co_cd_consecutivo_archivo ON public.cobros USING btree (cd_consecutivo_archivo);
+
+
+--
+-- Name: fki_co_cd_empresa; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_co_cd_empresa ON public.cobros USING btree (cd_empresa);
+
+
+--
+-- Name: indices_cuentasbancarias; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX indices_cuentasbancarias ON public.cuentasbancarias USING btree (cd_empresa, cd_banco);
+
+
+--
+-- Name: INDEX indices_cuentasbancarias; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON INDEX public.indices_cuentasbancarias IS 'indice para cuentas bancarias';
+
+
+--
+-- Name: model_has_permissions_model_id_model_type_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX model_has_permissions_model_id_model_type_index ON public.model_has_permissions USING btree (model_id, model_type);
+
+
+--
+-- Name: model_has_roles_model_id_model_type_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX model_has_roles_model_id_model_type_index ON public.model_has_roles USING btree (model_id, model_type);
+
+
+--
+-- Name: password_resets_email_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX password_resets_email_index ON public.password_resets USING btree (email);
+
+
+--
+-- Name: cuentasbancarias cb_cd_banco; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cuentasbancarias
+    ADD CONSTRAINT cb_cd_banco FOREIGN KEY (cd_banco) REFERENCES public.bancos(id) NOT VALID;
+
+
+--
+-- Name: cuentasbancarias cb_cd_empresa; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cuentasbancarias
+    ADD CONSTRAINT cb_cd_empresa FOREIGN KEY (cd_empresa) REFERENCES public.empresas(id) ON DELETE CASCADE;
+
+
+--
+-- Name: clientes cl_cd_banco; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.clientes
+    ADD CONSTRAINT cl_cd_banco FOREIGN KEY (cd_banco) REFERENCES public.bancos(id) NOT VALID;
+
+
+--
+-- Name: clientes cl_cd_empresas; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.clientes
+    ADD CONSTRAINT cl_cd_empresas FOREIGN KEY (cd_empesa) REFERENCES public.empresas(id) NOT VALID;
+
+
+--
+-- Name: cobros co_cd_cliente; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cobros
+    ADD CONSTRAINT co_cd_cliente FOREIGN KEY (cd_cliente) REFERENCES public.clientes(id) NOT VALID;
+
+
+--
+-- Name: cobros co_cd_consecutivo_archivo; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cobros
+    ADD CONSTRAINT co_cd_consecutivo_archivo FOREIGN KEY (cd_consecutivo_archivo) REFERENCES public.bitacora(cd_consecutivo_archivo) NOT VALID;
+
+
+--
+-- Name: cobros co_cd_empresa; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cobros
+    ADD CONSTRAINT co_cd_empresa FOREIGN KEY (cd_empresa) REFERENCES public.empresas(id) NOT VALID;
+
+
+--
+-- Name: model_has_permissions model_has_permissions_permission_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.model_has_permissions
+    ADD CONSTRAINT model_has_permissions_permission_id_foreign FOREIGN KEY (permission_id) REFERENCES public.permissions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: model_has_roles model_has_roles_role_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.model_has_roles
+    ADD CONSTRAINT model_has_roles_role_id_foreign FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE CASCADE;
+
+
+--
+-- Name: role_has_permissions role_has_permissions_permission_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.role_has_permissions
+    ADD CONSTRAINT role_has_permissions_permission_id_foreign FOREIGN KEY (permission_id) REFERENCES public.permissions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: role_has_permissions role_has_permissions_role_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.role_has_permissions
+    ADD CONSTRAINT role_has_permissions_role_id_foreign FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE CASCADE;
+
+
+--
+-- Name: users users_empresa_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON UPDATE CASCADE ON DELETE SET NULL NOT VALID;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
